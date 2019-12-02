@@ -1,0 +1,15 @@
+int main()
+{
+    int i, A[3], B_C_D[2], j;
+    i = A[0] = -(A[1]=B_C_D[1]=2)*(j=A[0]=A[A[1]]=A[A[1]-1]+1)
+    + (B_C_D[0]=1)+ + ++B_C_D[0] +- -B_C_D[0]++;
+    printf("%d ", i);
+    printf("%d ", j);
+    printf("%d ", A[0]);
+    printf("%d ", A[1]);
+    printf("%d ", A[2]);
+    printf("%d ", B_C_D[0]);
+    printf("%d\n", B_C_D[1]);
+
+    return 0;
+}

@@ -1,0 +1,102 @@
+\documentclass{article}
+\title{Grammar v0.5}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\begin{document}
+\maketitle
+\begin{alignat*}{3}
+INT &:=\;&&'\textrm{int}'\\
+FLOAT &:=&&'\textrm{float}'\\
+ID &:=&&alpha\;+\;(alphanum)^*\\
+VOID &:=&&'\textrm{void}'\\
+( &:=&& '\textrm{(}'\\
+) &:=&& '\textrm{)}'\\
+\{ &:=&& '\{'\\
+\} &:=&& '\}'\\
+[ &:=&& '['\\
+] &:=&& ']'\\
+, &:=&& ','\\
++ &:=&& '+'\\
+++ &:=&& '++'\\
+- &:=&& '-'\\
+'/' &:=&& '/'\\
+* &:=&& '*'\\
+> &:=&& '>'\\
+< &:=&& '<'\\
+; &:=&& ';'\\
+= &:=&& '='\\
+NUM &:=&& (num)^+\\
+&\vert&& (num)^*\;+\;'.'\;+\;(num)^+\\
+&\vert&& (num)^+\;+\;'.'\\
+FOR &:=&& '\textrm{for}'\\
+IF &:=&& '\textrm{if}'\\
+RETURN &:=&& '\textrm{return}'\\
+STRING &:=&& '"'\;+\;(stuff)^*\;+\;'"'
+\end{alignat*}
+\begin{alignat*}{5}
+<goal> &:&&=\;&& <funcs>\\
+<funcs> &:&&=&&\epsilon\\
+&&&\;\vert&& <func><funcs>\\
+<func> &:&&= &&INT/FLOAT \; ID \; ( \; <args> \left\{<stmts>\right\}\\
+<args> &:&&= &&VOID \; )\\
+&&&\;\vert && \epsilon \; )\\
+&&&\;\vert && INT/FLOAT\; \epsilon/* \; ID \; :,\; INT/FLOAT\; \epsilon/* \; ID\;:^*\;)\\
+<stmts> &:&&=&& :<decl>;/<stmt>:^*\\
+<stmt> &:&&=&&<instr>\; ;\\
+&&&\;\vert && <forst>\\
+&&&\;\vert && <ifst>\\
+&&&\;\vert && \left\{<stmts>\right\}\\
+&&&\;\vert && <retst>\\
+<instr> &:&&=&& <expr>\\
+&&&\;\vert && \epsilon\\
+<decl> &:&&=&& INT/FLOAT \; ID/ID[NUM] \; :,\; ID/ID[NUM]:^*\\
+<expr> &:&&=&& <expr> +/- <term>\\
+&&&\;\vert && <term>\\
+&&&\;\vert && ID/ID[<expr>] \; = \; <expr>\\
+&&&\;\vert && <expr> \;\;\; >/< \;\;\; <expr>\\
+<term> &:&&=&& <factor>\\
+&&&\;\vert && <term> */'/' \; <factor>\\
+<factor> &:&&=&& ID\\
+&&&\;\vert && ID/ID[<expr>]\;\;++\\
+&&&\;\vert && ++\;\;ID/ID[<expr>]\\
+&&&\;\vert && ID[<expr>]\\
+&&&\;\vert && ID(<call>)\\
+&&&\;\vert && NUM\\
+&&&\;\vert && (<expr>)\\
+&&&\;\vert && +/-factor\\
+<call> &:&&=&& \epsilon\\
+&&&\;\vert && <expr> \; :, <expr>:^*\\
+<forst> &:&&=&& FOR \; (\; <instr>/<decl>\; ; \; <expr> \; ; \; <instr>\;)\;<stmt>\\
+<ifst> &:&&=&& IF\;(\;<expr>\;)\;<stmt>\\
+<retst> &:&&=&& RETURN\; <expr>\; ;
+\end{alignat*}
+
+\begin{alignat*}{7}
+&1.<stmt>&&:&&=\;&&<instr>;\\
+&2.&&&&\vert&&<forst>\\
+&3.&&&&\vert&&<ifst>\\
+&4.&&&&\vert&&\{<stmts>\}\\
+&5.&&&&\vert&&<retst>
+\end{alignat*}
+\begin{alignat*}{7}
+&1.<instr>&&:&&=\;&&\\
+&2.&&&&\vert&&\\
+&3.&&&&\vert&&<expr>\\
+&4.&&&&\vert&&\epsilon
+\end{alignat*}
+\begin{alignat*}{7}
+&1.<expr>&&:&&=\;&&<term>\vert<expr> +/- <term>\vert <expr> \;\;>/<\;\; <expr>\\
+&2.&&&&\vert&&lhs = <expr>
+\end{alignat*}
+\begin{alignat*}{7}
+&1.<factor>&&:&&=\;&&lhs\vert ++lhs\vert lhs++\\
+&2.&&&&\vert&&ID(<call>)\\
+&3.&&&&\vert&&NUM\\
+&4.&&&&\vert&&NUM2\\
+&5.&&&&\vert&&(<expr>)\\
+&6.&&&&\vert&&+/- <factor>
+\end{alignat*}
+\end{document}

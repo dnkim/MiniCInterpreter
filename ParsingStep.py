@@ -90,8 +90,15 @@ class Par:
         self.next_token()
         stmts = ParsedStmt4(self.line_num)
         while self.top_token().type != TokRcurly:
-            stmt = self.match_stmt()
-            stmts.stmts.append(stmt)
+            tt = self.top_token().type
+            if tt == TokInt or tt == TokFloat:
+                decl = self.match_decl_1107()
+                if self.next_token().type != TokSemicol:
+                    self.report_parsing_exception("Expected semicolon after declaration")
+                stmts.stmts.append(decl)
+            else:
+                stmt = self.match_stmt()
+                stmts.stmts.append(stmt)
         
         self.next_token()
         return stmts
@@ -113,18 +120,17 @@ class Par:
         self.next_token()
         if self.next_token().type != TokLparen:
             self.report_parsing_exception("for statement without opening parentheses")
-        forst.initialize = self.match_instr()
+        tt = self.top_token().type
+        forst.initialize = self.match_decl_1107() if tt == TokInt or tt == TokFloat else self.match_instr()
         if self.next_token().type != TokSemicol:
             self.report_parsing_exception("No semicolon after init")
         forst.condition = self.match_expr()
         if self.next_token().type != TokSemicol:
             self.report_parsing_exception("No semicolon after cond")
-        forst.update = self.match_expr()
+        forst.update = self.match_instr()
         if self.next_token().type != TokRparen:
             self.report_parsing_exception("What were you born in a barn or something?")
         forst.stmt = self.match_stmt()
-        if forst.stmt.type == ParsedInst2:
-            self.report_parsing_exception("Apparently in C, declarations are not statements")
         return forst
 
     def match_ifst(self):
@@ -136,8 +142,6 @@ class Par:
         if self.next_token().type != TokRparen:
             self.report_parsing_exception("What were you born in a cave?")
         ifst.stmt = self.match_stmt()
-        if ifst.stmt.type == ParsedInst2:
-            self.report_parsing_exception("Apparently in C, declarations are not statements")
         return ifst
 
     def match_retst(self):
@@ -150,9 +154,11 @@ class Par:
 
     def match_instr(self):
         tt = self.top_token().type
-        if tt == TokSemicol: return ParsedInst4(self.line_num)
-        elif tt == TokInt or tt == TokFloat: return self.match_decl_1107()
-        else: return self.match_expr()
+        if tt == TokSemicol or tt == TokRparen: return ParsedInst4(self.line_num)
+        else:
+            instr = ParsedInst3(self.line_num)
+            instr.expr = self.match_expr()
+            return instr
 
     def match_expr(self):
         term = self.match_term()
@@ -284,7 +290,7 @@ class Par:
         return self.top_token().type == TokComma, name, size
 
     def match_decl_1107(self):
-        decl2 = ParsedInst2(self.line_num)
+        decl2 = ParsedDecl(self.line_num)
         decl2.declares_int = self.next_token().type == TokInt
 
         has_more = True
@@ -294,59 +300,6 @@ class Par:
             if has_more: self.next_token()
         
         return decl2
-
-
-    def match_decl(self):
-        declares_int = self.top_token().type == TokInt
-        self.next_token()
-        token = self.next_token()
-        if token.type != TokId:
-            self.report_parsing_exception("Expected variable name")
-        name = token.data
-        if self.top_token().type == TokLbrack:
-            self.next_token()
-            token = self.next_token()
-            if token.type != TokNum:
-                self.report_parsing_exception("Size of array must be integer type")
-            size = int(token.data)
-            if self.next_token().type != TokRbrack:
-                self.report_parsing_exception("Expected closing brackets")
-            return self.match_decl2(declares_int, name, size)
-            
-        else: return self.match_decl1(declares_int, name)
-
-    def match_decl2(self, declares_int, first_name, first_size):
-        inst2 = ParsedInst2(self.line_num)
-        inst2.declares_int = declares_int
-        inst2.declarations.append((first_name, first_size))
-        while self.top_token().type == TokComma:
-            self.next_token()
-            token = self.next_token()
-            if token.type != TokId:
-                self.report_parsing_exception("Expected variable name")
-            name = token.data
-            if self.next_token().type != TokLbrack:
-                self.report_parsing_exception("Expected opening brackets")
-            token = self.next_token()
-            if token.type != TokNum:
-                self.report_parsing_exception("Size of array must be integer type")
-            size = int(token.data)
-            if self.next_token().type != TokRbrack:
-                self.report_parsing_exception("Expected closing brackets")
-            inst2.declarations.append((name, size))
-        return inst2
-
-    def match_decl1(self, declares_int, first_name):
-        inst1 = ParsedInst1(self.line_num)
-        inst1.declares_int = declares_int
-        inst1.declarations.append(first_name)
-        while self.top_token().type == TokComma:
-            self.next_token()
-            token = self.next_token()
-            if token.type != TokId:
-                self.report_parsing_exception("Expected variable name")
-            inst1.declarations.append(token.data)
-        return inst1
 
     def match_args(self):
         token = self.top_token()

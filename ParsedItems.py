@@ -76,22 +76,10 @@ class ParsedStmt5(ParsedItem):
         self.expr = None
     def __str__(self):
         return 'Return('+str(self.expr)+')'
-    
 
-class ParsedInst1(ParsedItem):
+class ParsedDecl(ParsedItem):
     def __init__(self, line_num):
-        self.type = PitInst1
-        self.line_num = line_num
-        self.declares_int = False
-        self.declarations = []
-    def __str__(self):
-        typestr = 'int' if self.declares_int else 'float'
-        strings = ["Declaration: ", typestr, ' ']
-        return ''.join(strings) + ', '.join(self.declarations)
-
-class ParsedInst2(ParsedItem):
-    def __init__(self, line_num):
-        self.type = PitInst2
+        self.type = PitDecl
         self.line_num = line_num
         self.declares_int = False
         self.declarations = []
@@ -100,6 +88,14 @@ class ParsedInst2(ParsedItem):
         strings = ["Declaration: ", typestr, ' ']
         decstrings = [str(i) for i in self.declarations]
         return ''.join(strings) + ', '.join(decstrings)
+
+class ParsedInst3(ParsedItem):
+    def __init__(self, line_num):
+        self.type = PitInst3
+        self.line_num = line_num
+        self.expr = None
+    def __str__(self):
+        return 'Inst3: '+str(self.expr)
 
 class ParsedInst4(ParsedItem):
     def __init__(self, line_num):

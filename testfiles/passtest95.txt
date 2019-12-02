@@ -1,0 +1,12 @@
+float fun(int i){
+    return i + 1 - 2;
+}
+
+int main()
+{
+    int i;
+    i = 1;
+    i = fun(i);
+    printf("Hell%d World\n", i);
+    return 0;
+}

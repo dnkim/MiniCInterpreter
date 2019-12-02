@@ -4,9 +4,10 @@ TEST_OPT = par
 TEST_DIR = testfiles
 
 test:
-	@for f in $(TEST_DIR)/*; do \
-		$(CC) $(TESTER) $(TEST_OPT) $$f $$f.result; \
+	@test ! -d $(TEST_DIR)/results && mkdir $(TEST_DIR)/results
+	@for f in $(notdir $(wildcard $(TEST_DIR)/*.txt)); \
+	do $(CC) $(TESTER) $(TEST_OPT) $(TEST_DIR)/$$f $(TEST_DIR)/results/$$f; \
 	done
 
 clean:
-	@rm -f $(TEST_DIR)/*.result
+	@rm -f $(TEST_DIR)/results/*.txt

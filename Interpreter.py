@@ -1,5 +1,6 @@
 from Frame import Frame
 from Command import Command
+from Result import *
 
 MAIN = "main"
 

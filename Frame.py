@@ -1,13 +1,7 @@
 from Function import FunctionEntry, FunctionTable
 from Symbol import SymbolEntry, SymbolTable
 from ParsedItems import ParsedFunc
-
-class Result:
-	def __init__(self, value = None):
-		self.value = value
-
-class Ok(Result): pass
-class Err(Result): pass
+from Result import *
 
 class Frame:
 	def __init__(self):

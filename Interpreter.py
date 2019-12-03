@@ -4,9 +4,9 @@ from Command import Command
 MAIN = "main"
 
 class Interpreter:
-	def __init__(self):
+	def __init__(self, test = False):
 		self.frame = Frame()
-		self.command = Command()
+		self.command = Command(frame, test)
 
 		# build AST
 

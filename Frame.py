@@ -87,14 +87,10 @@ class Frame:
 			return Err()
 
 	# Returns corresponding type
-	def get_type(self, name, index = None):
+	def get_type(self, name):
 		entry = self.search_symbol(name)
 		if entry:
-			result = entry.get_type(index)
-			if result:
-				return Ok(result)
-			else:
-				return Err()
+			return Ok(entry.get_type())
 		else:
 			return Err()
 

@@ -14,17 +14,8 @@ class SymbolEntry:
 			self.values += [(line, None)]
 
 	# Returns corresponding type
-	def get_type(self, index = None):
-		if index is None:
-			return (self.is_int, self.length)
-		else:
-			if self.length is None:
-				return None
-			else:
-				if 0 <= index < self.length:
-					return (self.is_int, None)
-				else:
-					return None
+	def get_type(self):
+		return (self.is_int, self.length)
 
 	# Returns corresponding value
 	def get_value(self, index = None):

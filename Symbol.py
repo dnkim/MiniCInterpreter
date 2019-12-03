@@ -38,17 +38,17 @@ class SymbolEntry:
 			else:
 				return self.values[-1]
 		else:
-			assert self.length
+			assert self.length is not None
 			assert 0 <= index < self.length
 			return self.values[index]
 
 	# Updates corresponding value
 	def update_value(self, line, value, index = None):
 		if index is None:
-			assert self.length == None
+			assert self.length is None
 			self.values.append((line, value))
 		else:
-			assert self.length
+			assert self.length is not None
 			assert 0 <= index < self.length
 			self.values[index].append((line, value))
 

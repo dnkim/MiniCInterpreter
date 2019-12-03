@@ -1,4 +1,5 @@
-from Frame import Frame, Ok, Err
+from Frame import Frame
+from Result import *
 
 class Command:
 	def __init__(self, frame, test = False):

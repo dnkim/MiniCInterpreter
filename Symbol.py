@@ -1,5 +1,3 @@
-VAR_SIZE = 0x4
-
 class SymbolEntry:
 	def __init__(self, line, address, is_int, length = None):
 		self.is_int = is_int
@@ -44,17 +42,14 @@ class SymbolEntry:
 			self.values[index].append((line, value))
 
 class SymbolTable:
-	def __init__(self, top = 0x0000):
+	def __init__(self):
 		self.symbols = {}
-		self.top = top
 
 	# Adds a new symbol
 	def add(self, name, entry):
-		assert entry.address == self.top
 		if name in self.symbols:
 			return False
 		self.symbols[name] = entry
-		self.top += VAR_SIZE
 		return True
 
 	# Searches symbol for name
@@ -63,11 +58,3 @@ class SymbolTable:
 			return self.symbols[name]
 		except KeyError:
 			return None
-
-	# Returns address to be allocated
-	def allocate(self):
-		return self.top
-
-	# Used when entering into a new bracket or function
-	def above(self):
-		return SymbolTable(self.top)

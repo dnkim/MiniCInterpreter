@@ -3,26 +3,35 @@ from Symbol import SymbolEntry, SymbolTable
 from ParsedItems import ParsedFunc
 from Result import *
 
+SIZE = 0x4
+BASE = 0x0000
+
 class Frame:
 	def __init__(self):
 		self.function_table = FunctionTable()
 		self.symbol_tables = [None, SymbolTable()]
+		self.top = BASE
+		self.flag = None
 
 	# Handles frame to reflect scope for a new bracket
 	def into_bracket(self):
-		self.symbol_tables.append(self.symbol_tables[-1].above())
+		self.symbol_tables.append(SymbolTable())
+		self.flag = True
 
 	# Handles frame to reflect scope for a new function
 	def into_function(self):
 		self.symbol_tables.append(None)
-		self.symbol_tables.append(self.symbol_tables[-2].above())
+		self.symbol_tables.append(SymbolTable())
+		self.flag = False
 
 	# Handles frame to reflect scope after escaping from bracket
 	def escape_bracket(self):
+		assert self.flag
 		self.symbol_tables.pop()
 
 	# Handles frame to reflect scope after escaping from function
 	def escape_function(self):
+		assert not self.flag
 		self.symbol_tables.pop()
 		self.symbol_tables.pop()
 
@@ -54,6 +63,8 @@ class Frame:
 	# Private
 	# Adds a new symbol
 	def add_symbol(self, name, entry):
+		assert entry.address == self.top
+		self.top += SIZE
 		return self.symbol_tables[-1].add(name, entry)
 
 	# Private
@@ -66,12 +77,11 @@ class Frame:
 					return entry
 			else:
 				return None
-		return None
 
 	# Private
 	# Returns address to be allocated
 	def allocate_symbol(self):
-		return self.symbol_tables[-1].allocate()
+		return self.top
 
 	# Declares corresponding symbol
 	def declare_symbol(self, name, line, is_int, length = None):

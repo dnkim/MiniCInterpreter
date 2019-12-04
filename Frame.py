@@ -96,8 +96,6 @@ class Frame:
 		else: return Err()
 
 	def declare_array(self, name, line, is_int, length):
-		if length == 0:
-			return Err()
 		addr = self.allocate_symbol(is_int, length)
 		if self.add_symbol(name, SymbolEntry(line, is_int, True, addr)): return Ok()
 		else: return Err()
@@ -111,14 +109,27 @@ class Frame:
 			return Err()
 
 	# Returns corresponding value
+	# Garbage value defaults to 0xcccc (not a bitstring though lul)
 	def get_value(self, name, index = None):
+		entry = self.search_symbol(name)
+		if entry:
+			is_int, is_pointer, value = entry.get_value()
+			if index == None: return Ok((is_int, is_pointer, value if value != None else 0xcccc))
+			if not is_pointer: return Err()
+			# garbage value
+			if index < 0 or index >= self.array_of_arrays[value][1]: return Ok((is_int, False, 0xcccc))
+			return Ok((is_int, False, self.array_of_arrays[value][2][index]))
+		else:
+			return Err()
+
+	def get_value_cmd(self, name, index = None):
 		entry = self.search_symbol(name)
 		if entry:
 			is_int, is_pointer, value = entry.get_value()
 			if index == None: return Ok((is_int, is_pointer, value))
 			if not is_pointer: return Err()
 			# garbage value
-			if index < 0 or index >= self.array_of_arrays[value][1]: return Ok((is_int, False, 0xcccc))
+			if index < 0 or index >= self.array_of_arrays[value][1]: return Err()
 			return Ok((is_int, False, self.array_of_arrays[value][2][index]))
 		else:
 			return Err()

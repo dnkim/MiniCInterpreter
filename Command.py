@@ -1,26 +1,37 @@
 from Frame import Frame
 from Result import *
 
+class CmdException(Exception): pass
+
 class Command:
-	def __init__(self, frame, test = False):
-		self.test = test
-		if self.test:
-			return
+	def __init__(self, frame, no_command = False, actual_code_lines = None):
+		self.no_cmd = no_command
 		self.frame = frame
 		self.lines = 0
+		self.current_line = 0
+		self.actual_code_lines = actual_code_lines if actual_code_lines else []
 
-	def feed_line(self):
-		if self.test:
-			return
-		while self.lines == 0:
+	def skip_lines(self, to_line, decrement=False):
+		self.current_line = to_line
+		if decrement: self.lines -= 1
+		while self.lines <= 0:
 			self.command()
-		self.lines -= 1
+
+	def feed_line(self, waiting_ln):
+		self.lines = self.lines - (waiting_ln - self.current_line)
+		self.current_line = waiting_ln
+		while self.lines <= 0:
+			self.command()
 
 	def command(self):
+		if self.no_cmd:
+			self.lines = 1000
+			return
 		while True:
 			argv = input(">>").split()
-			argc = argv.length()
-			if argv[0] == "next":
+			argc = len(argv)
+			if argc == 0: continue
+			if argv[0] == "next" or argv[0] == 'n':
 				if argc == 1:
 					self.cmd_next(1)
 					break
@@ -48,22 +59,30 @@ class Command:
 						print("Invalid typing of the variable name")
 				else:
 					print("Invalid typing of the variable name")
+			elif argv[0] == "current" or argv[0] == 'c':
+				print(self.current_line, self.actual_code_lines[self.current_line-1])
+			elif argv[0] == "exit":
+				raise CmdException()
 
 	def cmd_next(self, lines):
 		if lines < 0:
 			raise ValueError
-		self.lines = lines
+		self.lines += lines
 
 	def cmd_print(self, name):
 		proceed, symbol, index = check_name_print(name)
+		#print(proceed, symbol, index)
 		if not proceed:
 			raise ValueError
-		result = self.frame.get_value(symbol, index)
+		result = self.frame.get_value_cmd(symbol, index)
 		if type(result) is Ok:
-			if result.value is None:
+			if result.value[2] is None:
 				value = "N/A"
 			else:
-				value = str(result.value)
+				if result.value[1]:
+					value = hex(result.value[2])
+				else:
+					value = str(int(result.value[2])) if result.value[0] else str(float(result.value[2]))
 			print(value)
 		else:
 			print("Invisible variable")
@@ -71,7 +90,7 @@ class Command:
 	def cmd_trace(self, name):
 		if not check_name(name):
 			raise ValueError
-		result = self.frame.get_value(name)
+		result = self.frame.get_history(name)
 		if type(result) is Ok:
 			for (line, value) in result.value:
 				line = str(line)
@@ -92,20 +111,16 @@ def check_name(name):
 	return True
 
 def check_name_print(name):
-	if not (name[0].isalpha() or name[0] == '_'):
-		return False
-	
 	enc_legalc = False
 	enc_lbrack = False
 	enc_number = False
 	enc_rbrack = False
 
 	index_start = 0
-	index_end = None
-	for i in range(1, len(name)):
+	for i in range(len(name)):
 		c = name[i]
 		if not enc_legalc:
-			if c.isalpha() or c.isdecimal() or c == "_":
+			if c.isalpha() or c == "_":
 				enc_legalc = True
 				continue
 		
@@ -126,12 +141,11 @@ def check_name_print(name):
 			if c.isdecimal():
 				continue
 			if c == ']':
-				index_end = i
 				enc_rbrack = True
 				continue
 
 		return False, None, None
 
-	symbol = name[0 : index_start - 1]
-	index = int(name[index_start, index_end]) if enc_rbrack else None
+	symbol = name[0 : index_start - 1] if enc_rbrack else name
+	index = int(name[index_start : -1]) if enc_rbrack else None
 	return True, symbol, index

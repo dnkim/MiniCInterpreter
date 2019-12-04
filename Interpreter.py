@@ -1,5 +1,5 @@
 from Frame import Frame
-from Command import Command
+from Command import Command, CmdException
 from Result import *
 from LexicalStep import Lex
 from ParsingStep import Par
@@ -30,10 +30,10 @@ class IAdd:
 		self.num = num
 
 class Interpreter:
-	def __init__(self, goal, test = False, actual_code_lines = None):
+	def __init__(self, goal, test = False, actual_code_lines = None, no_command = True):
 		self.test = test
 		self.frame = Frame()
-		self.command = Command(self.frame, test)
+		self.command = Command(self.frame, no_command, actual_code_lines)
 		self.proper_exit = False
 		self.exit_code = -1
 		self.actual_code_lines = actual_code_lines if actual_code_lines else []
@@ -86,11 +86,16 @@ class Interpreter:
 		main = self.test_Err(main, len(self.actual_code_lines), "Found no main()")
 		self.test_something(len(main.arguments) == 0, main.line_num, "main() should have no arguments for our stupid implementation")
 
-		self.exit_code = int(self.execute_func(main, []).num)
-		self.proper_exit = True
+		try:
+			self.exit_code = int(self.execute_func(main, []).num)
+			self.proper_exit = True
+		except CmdException:
+			pass
 		return
 		
 	def execute_func(self, func, arguments):
+		back_ttf = self.command.current_line
+		self.command.skip_lines(func.line_num)
 		if len(func.arguments) != len(arguments):
 			self.report_rt_err(func.line_num, "Function call argument length mismatch")
 		
@@ -124,6 +129,9 @@ class Interpreter:
 				break
 		
 		self.frame.escape_function()
+		if stmt.type != PitStmt5:
+			self.command.feed_line(func.end_ln+1 if stmt.line_num != func.end_ln else func.end_ln)
+		self.command.skip_lines(back_ttf)
 		return rax
 	
 	def execute_printf(self, arguments, line_num):
@@ -190,50 +198,64 @@ class Interpreter:
 
 	# For Stmt
 	def handle_stmt2(self, forst):
+		self.command.feed_line(forst.line_num)
 		self.frame.into_bracket()
 		
 		self.whos_that_poke(forst.initialize)
 		while int(self.whos_that_poke(forst.condition).num):
 			self.whos_that_poke(forst.stmt)
+			self.command.skip_lines(forst.line_num, True)
 			self.whos_that_poke(forst.update)
 
+		to_line = forst.stmt.end_ln if forst.stmt.type == PitStmt4 else forst.stmt.line_num
+		self.command.skip_lines(to_line)
 		self.frame.escape_bracket()
 
 	# If Stmt
 	def handle_stmt3(self, ifst):
+		self.command.feed_line(ifst.line_num)
 		if int(self.whos_that_poke(ifst.condition).num):
 			self.whos_that_poke(ifst.stmt)
 
+		to_line = ifst.stmt.end_ln if ifst.stmt.type == PitStmt4 else ifst.stmt.line_num
+		self.command.skip_lines(to_line)
+
 	# Compound Stmt i.e. {stmt/decl*}
 	def handle_stmt4(self, stmts):
+		self.command.feed_line(stmts.line_num)
 		self.frame.into_bracket()
 
 		for stmt in stmts.stmts:
 			self.whos_that_poke(stmt)
 
 		self.frame.escape_bracket()
+		self.command.feed_line(stmts.end_ln)
 
 	# Return Stmt
 	def handle_stmt5(self, retst):
+		self.command.feed_line(retst.line_num)
 		raise ReturnException(self.whos_that_poke(retst.expr))
 
 	# Declaration
 	def handle_decl(self, decl):
+		self.command.feed_line(decl.line_num)
 		for thing in decl.declarations:
 			if thing[1] == None:
 				result = self.frame.declare_direct(thing[0], decl.line_num, decl.declares_int)
 				self.test_Err(result, decl.line_num, "Declaration went wrong")
 				continue
 			result = self.frame.declare_array(thing[0], decl.line_num, decl.declares_int, thing[1])
+			self.test_Err(result, decl.line_num, "Declaration went wrong")
 
 
 	# Inst3 : Expr
 	def handle_inst3(self, inst3):
+		self.command.feed_line(inst3.line_num)
 		self.whos_that_poke(inst3.expr)
 
 	# Inst4 : Noop
 	def handle_inst4(self, inst4):
-		pass
+		self.command.feed_line(inst4.line_num)
 
 	def sub_do_arithmetic(self, lhs, rhs, op, line_num):
 		self.test_something(not (isinstance(lhs, IAdd) or isinstance(rhs, IAdd)), line_num, "Pointer arithmetic")
@@ -375,7 +397,8 @@ def main():
 			return
 		file_inp.seek(0)
 		actual_code_lines = [line.rstrip() for line in file_inp]
-		interp = Interpreter(goal, True, actual_code_lines)
+		no_command = True if len(sys.argv) > 2 else False
+		interp = Interpreter(goal, True, actual_code_lines, no_command)
 		if interp.proper_exit:
 			print("\n\n...Program finished with exit code:", interp.exit_code)
 		

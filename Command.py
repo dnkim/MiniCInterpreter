@@ -7,7 +7,7 @@ class Command:
 	def __init__(self, frame, no_command = False, actual_code_lines = None):
 		self.no_cmd = no_command
 		self.frame = frame
-		self.lines = 0
+		self.lines = 1
 		self.current_line = 0
 		self.actual_code_lines = actual_code_lines if actual_code_lines else []
 
@@ -60,7 +60,8 @@ class Command:
 				else:
 					print("Invalid typing of the variable name")
 			elif argv[0] == "current" or argv[0] == 'c':
-				print(self.current_line, self.actual_code_lines[self.current_line-1])
+				line_to_print = self.current_line + self.lines
+				print(line_to_print, self.actual_code_lines[line_to_print-1])
 			elif argv[0] == "exit":
 				raise CmdException()
 

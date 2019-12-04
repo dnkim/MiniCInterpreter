@@ -95,7 +95,7 @@ class Interpreter:
 		
 	def execute_func(self, func, arguments):
 		back_ttf = self.command.current_line
-		self.command.skip_lines(func.line_num)
+		self.command.skip_lines(func.start_ln, True)
 		if len(func.arguments) != len(arguments):
 			self.report_rt_err(func.line_num, "Function call argument length mismatch")
 		
@@ -130,7 +130,7 @@ class Interpreter:
 		
 		self.frame.escape_function()
 		if stmt.type != PitStmt5:
-			self.command.feed_line(func.end_ln+1 if stmt.line_num != func.end_ln else func.end_ln)
+			self.command.feed_line(func.end_ln)
 		self.command.skip_lines(back_ttf)
 		return rax
 	

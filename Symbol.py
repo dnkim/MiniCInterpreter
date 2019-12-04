@@ -1,45 +1,25 @@
 class SymbolEntry:
-	def __init__(self, line, address, is_int, length = None):
+	def __init__(self, line, is_int, is_pointer = None, value = None):
 		self.is_int = is_int
-		self.length = length
-		self.address = address
+		self.is_pointer = is_pointer
 		self.values = []
-		if self.length is not None:
-			for i in range(self.length):
-				self.values += [[(line, None)]]
-			self.values += [[(line, self.address)]]
-		else:
-			self.values += [(line, None)]
+		self.values += [(line, value)]
 
 	# Returns corresponding type
 	def get_type(self):
-		return (self.is_int, self.length)
+		return (self.is_int, self.is_pointer)
 
 	# Returns corresponding value
-	def get_value(self, index = None):
-		return self.get_history(index)[-1][1]
+	def get_value(self):
+		return self.is_int, self.is_pointer, self.values[-1][1]
 
 	# Returns corresponding history
-	def get_history(self, index = None):
-		if index is None:
-			if self.length is None:
-				return self.values
-			else:
-				return self.values[-1]
-		else:
-			assert self.length is not None
-			assert 0 <= index < self.length
-			return self.values[index]
+	def get_history(self):
+		return self.values
 
 	# Updates corresponding value
-	def update_value(self, line, value, index = None):
-		if index is None:
-			assert self.length is None
-			self.values.append((line, value))
-		else:
-			assert self.length is not None
-			assert 0 <= index < self.length
-			self.values[index].append((line, value))
+	def update_value(self, line, value):
+		self.values.append((line, value))
 
 class SymbolTable:
 	def __init__(self):

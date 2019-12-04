@@ -23,7 +23,7 @@ class Par:
         except StopIteration:
             return Token(TokEOF)
         if token.type == TokError:
-            print("Lex error:", token.data)
+            if self.loud: print("Lex error:", token.data)
             raise ParsingException()
         #print (token.type,'', end='')
         if token.type == TokNewline:
@@ -52,14 +52,15 @@ class Par:
             try:
                 goal.funcs.append(self.match_func())
             except ParsingException:
-                print("Abandoning parsing\n")
+                if self.loud: print("Abandoning parsing\n")
+                else: print("Syntax error : line", self.line_num)
                 return False
             except ParsingDone: break
 
         return goal
 
     def report_parsing_exception(self, string):
-        print("At line ", self.line_num, ", ", string, ", SmileyFace", sep='')
+        if self.loud: print("At line ", self.line_num, ", ", string, ", SmileyFace", sep='')
         raise ParsingException()
 
     def match_func(self):
@@ -84,6 +85,8 @@ class Par:
 
         stmts = self.match_stmts()
         func.stmts = stmts.stmts
+        func.start_ln = stmts.line_num
+        func.end_ln = stmts.end_ln
         return func
 
     def match_stmts(self):
@@ -101,6 +104,7 @@ class Par:
                 stmts.stmts.append(stmt)
         
         self.next_token()
+        stmts.end_ln = self.line_num
         return stmts
     
     def match_stmt(self):

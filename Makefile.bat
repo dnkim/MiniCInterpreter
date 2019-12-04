@@ -16,3 +16,8 @@ if %1 ==clean (
 if %1 == test2 (
 for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do echo %%f
 )
+
+if %1 == testinterp (
+for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do %CC% Interpreter.py .\%TEST_DIR%\%%f > .\%TEST_DIR%\results\%%f
+
+)

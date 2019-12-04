@@ -25,6 +25,8 @@ class ParsedFunc(ParsedItem):
         self.name = ''
         self.arguments = []
         self.stmts = []
+        self.start_ln = 0
+        self.end_ln = 0
     def __str__(self):
         strings = []
         for arg in self.arguments:
@@ -63,6 +65,7 @@ class ParsedStmt4(ParsedItem):
         self.type = PitStmt4
         self.line_num = line_num
         self.stmts = []
+        self.end_ln = 0
     def __str__(self):
         strings = ['{\n']
         for stmt in self.stmts:
@@ -116,6 +119,7 @@ class ParsedExpr1(ParsedItem):
 class ParsedExpr2(ParsedItem):
     def __init__(self, line_num):
         self.type = PitExpr2
+        self.line_num = line_num
         self.lhs = ('', None)
         self.expr = None
     def __str__(self):

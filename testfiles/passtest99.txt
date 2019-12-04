@@ -1,0 +1,14 @@
+float main()
+{
+    int i, a; i= 1; a = 0;
+    for (int i; a < 50; ){
+        i = a;
+        i ++;
+        a = i;
+        printf("%d ", a);
+        int i; i= 0;
+    }
+    {}{}{}{}{{}}{{}{{{}}{}}}
+    printf("%d", printf("%d %d\n", a, i));
+    return 1;
+}

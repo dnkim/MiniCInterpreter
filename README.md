@@ -1,4 +1,11 @@
 # MiniCInterpreter
 ## How to use
-- `make test`
-- `make clean`
+### Setup
+```
+make test
+make clean
+```
+### Run
+```
+python Interpreter.py [input.txt]
+```

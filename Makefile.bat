@@ -1,12 +1,12 @@
 set CC=python
-set TESTER=LexParTester.py
-set TEST_OPT=par
+set TESTER=MiniCInterpreter.py
+set TEST_OPT=test
 set TEST_DIR=testfiles
 
 echo %TEST_DIR%
 
 if %1 == test (
-for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do %CC% %TESTER% %TEST_OPT% .\%TEST_DIR%\%%f .\%TEST_DIR%\results\%%f
+for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do %CC% %TESTER% .\%TEST_DIR%\%%f %TEST_OPT% > .\%TEST_DIR%\results\%%f
 )
 
 if %1 ==clean (
@@ -15,9 +15,4 @@ if %1 ==clean (
 
 if %1 == test2 (
 for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do echo %%f
-)
-
-if %1 == testinterp (
-for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do %CC% Interpreter.py .\%TEST_DIR%\%%f yeah > .\%TEST_DIR%\results\%%f
-
 )

@@ -7,5 +7,14 @@ make clean
 ```
 ### Run
 ```
-python Interpreter.py [input.txt]
+./mci <input>
+```
+### CLI
+```
+>> next/n [<lines>]
+>> print/p <name>
+>> trace/t <name>
+>> current/c
+>> location/l
+>> quit/q
 ```

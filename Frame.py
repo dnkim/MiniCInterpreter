@@ -135,7 +135,6 @@ class Frame:
 			return Err()
 
 	# Returns corresponding history
-	# 
 	def get_history(self, name):
 		entry = self.search_symbol(name)
 		if entry:

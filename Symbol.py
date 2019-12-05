@@ -15,7 +15,7 @@ class SymbolEntry:
 
 	# Returns corresponding history
 	def get_history(self):
-		return self.values
+		return self.is_int, self.is_pointer, self.values
 
 	# Updates corresponding value
 	def update_value(self, line, value):

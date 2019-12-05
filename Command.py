@@ -4,14 +4,15 @@ from Result import *
 class CmdException(Exception): pass
 
 class Command:
-	def __init__(self, frame, no_command = False, actual_code_lines = None):
+	def __init__(self, frame, no_command = False, actual_code_lines = []):
 		self.no_cmd = no_command
 		self.frame = frame
 		self.lines = 1
 		self.current_line = 0
-		self.actual_code_lines = actual_code_lines if actual_code_lines else []
+		self.actual_code_lines = actual_code_lines
+		self.digits = count_digits(len(self.actual_code_lines))
 
-	def skip_lines(self, to_line, decrement=False):
+	def skip_lines(self, to_line, decrement = False):
 		self.current_line = to_line
 		if decrement: self.lines -= 1
 		while self.lines <= 0:
@@ -28,7 +29,10 @@ class Command:
 			self.lines = 1000
 			return
 		while True:
-			argv = input(">>").split()
+			try:
+				argv = input(">> ").split()
+			except:
+				raise CmdException()
 			argc = len(argv)
 			if argc == 0: continue
 			if argv[0] == "next" or argv[0] == 'n':
@@ -43,7 +47,7 @@ class Command:
 						print("Incorrect command usage : try 'next [lines]'")
 				else:
 					print("Incorrect command usage : try 'next [lines]'")
-			elif argv[0] == "print":
+			elif argv[0] == "print" or argv[0] == 'p':
 				if argc == 2:
 					try:
 						self.cmd_print(argv[1])
@@ -51,7 +55,7 @@ class Command:
 						print("Invalid typing of the variable name")
 				else:
 					print("Invalid typing of the variable name")
-			elif argv[0] == "trace":
+			elif argv[0] == "trace" or argv[0] == 't':
 				if argc == 2:
 					try:
 						self.cmd_trace(argv[1])
@@ -60,10 +64,31 @@ class Command:
 				else:
 					print("Invalid typing of the variable name")
 			elif argv[0] == "current" or argv[0] == 'c':
-				line_to_print = self.current_line + self.lines
-				print(line_to_print, self.actual_code_lines[line_to_print-1])
-			elif argv[0] == "exit":
-				raise CmdException()
+				if argc == 1:
+					line_to_print = self.current_line + self.lines
+					if 0 < line_to_print <= len(self.actual_code_lines):
+						print(str(line_to_print).rjust(self.digits), self.actual_code_lines[line_to_print - 1])
+					else:
+						print("EOF")
+				else:
+					print("Incorrect command usage")
+			elif argv[0] == "location" or argv[0] == 'l':
+				if argc == 1:
+					line_to_print = self.current_line + self.lines
+					for line in range(1, len(self.actual_code_lines) + 1):
+						if line == line_to_print:
+							print("->", str(line).rjust(self.digits), self.actual_code_lines[line - 1])
+						else:
+							print("  ", str(line).rjust(self.digits), self.actual_code_lines[line - 1])
+				else:
+					print("Incorrect command usage")
+			elif argv[0] == "quit" or argv[0] == 'q':
+				if argc == 1:
+					raise CmdException()
+				else:
+					print("Incorrect command usage")
+			else:
+				print("Incorrect command usage")
 
 	def cmd_next(self, lines):
 		if lines < 0:
@@ -93,13 +118,16 @@ class Command:
 			raise ValueError
 		result = self.frame.get_history(name)
 		if type(result) is Ok:
-			for (line, value) in result.value:
+			for (line, value) in result.value[2]:
 				line = str(line)
 				if value is None:
 					value = "N/A"
 				else:
-					value = str(value)
-				print(name, "=", value, "at line", line, sep = " ")
+					if result.value[1]:
+						value = hex(value)
+					else:
+						value = str(int(value)) if result.value[0] else str(float(value))
+				print(name, "=", value, "at line", line)
 		else:
 			print("Invisible variable")
 
@@ -150,3 +178,11 @@ def check_name_print(name):
 	symbol = name[0 : index_start - 1] if enc_rbrack else name
 	index = int(name[index_start : -1]) if enc_rbrack else None
 	return True, symbol, index
+
+def count_digits(n):
+	digits = 1
+	while True:
+		n //= 10
+		if n == 0:
+			return digits
+		digits += 1

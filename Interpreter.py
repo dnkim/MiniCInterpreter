@@ -30,13 +30,14 @@ class IAdd:
 		self.num = num
 
 class Interpreter:
-	def __init__(self, goal, test = False, actual_code_lines = None, no_command = True):
+	def __init__(self, goal, test = False, actual_code_lines = [], no_command = True):
 		self.test = test
+		self.actual_code_lines = actual_code_lines
+		self.no_command = no_command
 		self.frame = Frame()
-		self.command = Command(self.frame, no_command, actual_code_lines)
+		self.command = Command(self.frame, self.no_command, self.actual_code_lines)
 		self.proper_exit = False
 		self.exit_code = -1
-		self.actual_code_lines = actual_code_lines if actual_code_lines else []
 		self.match = {
 			PitStmt2: self.handle_stmt2,
 			PitStmt3: self.handle_stmt3,
@@ -58,7 +59,13 @@ class Interpreter:
 
 		try:
 			self.handle_goal(goal)
+			if self.proper_exit:
+				print("... Program finished with exit code:", self.exit_code)
+			while not self.no_command:
+				self.command.command()
 		except RTException:
+			pass
+		except CmdException:
 			pass
 
 	def report_rt_err(self, line_num, string):
@@ -86,12 +93,8 @@ class Interpreter:
 		main = self.test_Err(main, len(self.actual_code_lines), "Found no main()")
 		self.test_something(len(main.arguments) == 0, main.line_num, "main() should have no arguments for our stupid implementation")
 
-		try:
-			self.exit_code = int(self.execute_func(main, []).num)
-			self.proper_exit = True
-		except CmdException:
-			pass
-		return
+		self.exit_code = int(self.execute_func(main, []).num)
+		self.proper_exit = True
 		
 	def execute_func(self, func, arguments):
 		back_ttf = self.command.current_line
@@ -104,7 +107,8 @@ class Interpreter:
 			self.test_something(not isinstance(arg, str), func.line_num, "String argument for non printf function call")
 			arg_values.append(self.whos_that_poke(arg))
 
-		self.frame.into_function()
+		if func.name != MAIN:
+			self.frame.into_function()
 		rax = IInt(0) if func.returns_int else IFlt(0)
 		for i in range(len(arguments)):
 			is_int, is_pointer, arg_name = func.arguments[i]
@@ -128,7 +132,8 @@ class Interpreter:
 				rax = IInt(rax.num) if func.returns_int else IFlt(rax.num)
 				break
 		
-		self.frame.escape_function()
+		if func.name != MAIN:
+			self.frame.escape_function()
 		if stmt.type != PitStmt5:
 			self.command.feed_line(func.end_ln)
 		self.command.skip_lines(back_ttf)
@@ -397,11 +402,8 @@ def main():
 			return
 		file_inp.seek(0)
 		actual_code_lines = [line.rstrip() for line in file_inp]
-		no_command = True if len(sys.argv) > 2 else False
+		no_command = True if (len(sys.argv) == 3 and sys.argv[2] == "test") else False
 		interp = Interpreter(goal, True, actual_code_lines, no_command)
-		if interp.proper_exit:
-			print("\n\n...Program finished with exit code:", interp.exit_code)
-		
 
 if __name__ == "__main__":
     main()

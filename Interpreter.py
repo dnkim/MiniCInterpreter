@@ -93,10 +93,10 @@ class Interpreter:
 		main = self.test_Err(main, len(self.actual_code_lines), "Found no main()")
 		self.test_something(len(main.arguments) == 0, main.line_num, "main() should have no arguments for our stupid implementation")
 
-		self.exit_code = int(self.execute_func(main, []).num)
+		self.exit_code = int(self.execute_func(main, [], True).num)
 		self.proper_exit = True
 		
-	def execute_func(self, func, arguments):
+	def execute_func(self, func, arguments, mainmain = False):
 		back_ttf = self.command.current_line
 		self.command.skip_lines(func.start_ln, True)
 		if len(func.arguments) != len(arguments):
@@ -132,11 +132,12 @@ class Interpreter:
 				rax = IInt(rax.num) if func.returns_int else IFlt(rax.num)
 				break
 		
-		if func.name != MAIN:
-			self.frame.escape_function()
 		if stmt.type != PitStmt5:
 			self.command.feed_line(func.end_ln)
-		self.command.skip_lines(back_ttf)
+
+		if not mainmain:
+			self.frame.escape_function()
+			self.command.skip_lines(back_ttf)
 		return rax
 	
 	def execute_printf(self, arguments, line_num):

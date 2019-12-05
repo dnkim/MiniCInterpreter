@@ -65,16 +65,16 @@ class Command:
 					print("Invalid typing of the variable name")
 			elif argv[0] == "current" or argv[0] == 'c':
 				if argc == 1:
-					line_to_print = self.current_line + self.lines
-					if 0 < line_to_print <= len(self.actual_code_lines):
-						print(str(line_to_print).rjust(self.digits), self.actual_code_lines[line_to_print - 1])
-					else:
+					if self.lines > 0:
 						print("EOF")
+					else:
+						line_to_print = self.current_line + self.lines
+						print(str(line_to_print).rjust(self.digits), self.actual_code_lines[line_to_print - 1])
 				else:
 					print("Incorrect command usage")
 			elif argv[0] == "location" or argv[0] == 'l':
 				if argc == 1:
-					line_to_print = self.current_line + self.lines
+					line_to_print = self.current_line + self.lines if self.lines <= 0 else -1
 					for line in range(1, len(self.actual_code_lines) + 1):
 						if line == line_to_print:
 							print("->", str(line).rjust(self.digits), self.actual_code_lines[line - 1])
@@ -106,7 +106,7 @@ class Command:
 				value = "N/A"
 			else:
 				if result.value[1]:
-					value = hex(result.value[2])
+					value = hex(result.value[2]*4)
 				else:
 					value = str(int(result.value[2])) if result.value[0] else str(float(result.value[2]))
 			print(value)
@@ -124,7 +124,7 @@ class Command:
 					value = "N/A"
 				else:
 					if result.value[1]:
-						value = hex(value)
+						value = hex(value*4)
 					else:
 						value = str(int(value)) if result.value[0] else str(float(value))
 				print(name, "=", value, "at line", line)

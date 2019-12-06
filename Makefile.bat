@@ -1,5 +1,5 @@
 set CC=python
-set TESTER=MiniCInterpreter.py
+set TESTER=src/MiniCInterpreter.py
 set TEST_OPT=test
 set TEST_DIR=testfiles
 

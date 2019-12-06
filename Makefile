@@ -1,5 +1,5 @@
 CC = python3
-TESTER = MiniCInterpreter.py
+TESTER = src/MiniCInterpreter.py
 TEST_OPT = test
 TEST_DIR = testfiles
 

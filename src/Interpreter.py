@@ -107,7 +107,7 @@ class Interpreter:
 			self.test_something(not isinstance(arg, str), func.line_num, "String argument for non printf function call")
 			arg_values.append(self.whos_that_poke(arg))
 
-		if func.name != MAIN:
+		if not mainmain:
 			self.frame.into_function()
 		rax = IInt(0) if func.returns_int else IFlt(0)
 		for i in range(len(arguments)):

@@ -11,3 +11,4 @@ test:
 
 clean:
 	@rm -rf $(TEST_DIR)/results
+	@rm -rf src/__pycache__

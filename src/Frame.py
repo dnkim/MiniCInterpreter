@@ -9,7 +9,7 @@ BASE = 0x0000
 class Frame:
 	def __init__(self):
 		self.function_table = FunctionTable()
-		self.symbol_tables = [None, SymbolTable()]
+		self.symbol_tables = []
 		self.array_of_arrays = [(True, 0, []) for i in range(0)]
 		self.top = BASE
 

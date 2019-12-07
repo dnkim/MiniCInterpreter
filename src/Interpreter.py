@@ -107,8 +107,7 @@ class Interpreter:
 			self.test_something(not isinstance(arg, str), func.line_num, "String argument for non printf function call")
 			arg_values.append(self.whos_that_poke(arg))
 
-		if not mainmain:
-			self.frame.into_function()
+		self.frame.into_function()
 		rax = IInt(0) if func.returns_int else IFlt(0)
 		for i in range(len(arguments)):
 			is_int, is_pointer, arg_name = func.arguments[i]
@@ -363,6 +362,7 @@ class Interpreter:
 
 	# Factor2 : Function call
 	def handle_factor2(self, factor2):
+		self.test_something(isinstance(self.frame.get_type(factor2.func_name), Err), factor2.line_num, "Not a function in this scope")
 		func = self.frame.get_function(factor2.func_name)
 		if isinstance(func, Err):
 			self.test_something(factor2.func_name == "printf", factor2.line_num, "No such function")

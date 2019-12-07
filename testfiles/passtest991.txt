@@ -1,0 +1,48 @@
+float inverse(float stuff){
+    return 1/stuff;
+}
+
+int factorial(int n){
+    if (n < 0) return -1;
+    if (n < 2) return 1;
+    return factorial(n-1)*n;
+}
+
+float euler(int n){
+    if (n < 0) return -1;
+    if (n < 2) return n + 1;
+    return inverse(factorial(n))+euler(n-1);
+}
+
+float root_5_minus_1_divded_by_2(float current, int iter){
+    if (iter < 1) return current;
+    return the_same(1/(1+current), iter-1);
+}
+
+float the_same(float current, int iter){
+    if (iter < 1) return current;
+    return root_5_minus_1_divded_by_2(1/(1+current), iter-1);
+}
+
+float pow(float base, int power){
+    if (power < 0) return -1;
+    if (power < 1) return 1;
+    return base * pow(base, power-1);
+}
+
+float roun(float base, int digits){
+    if ((digits < 1)+(base < 0)) return base;
+    float power_of_TEN; power_of_TEN = pow(10, digits);
+    int shiv; shiv = base * pow(10, digits+1);
+    int dec; dec = shiv/10;
+    int one; one = shiv - dec * 10;
+    int final; if (one < 5) final = dec; if (one > 4) final = dec + 1;
+    return final / power_of_TEN;
+}
+
+int main()
+{
+    printf("e = %f\n (-1+sqrt(5))/2 = %f\n", roun(euler(23), 9), roun(root_5_minus_1_divded_by_2(1, 50), 9));
+
+    return 0;
+}

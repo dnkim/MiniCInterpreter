@@ -73,7 +73,7 @@ class Interpreter:
 			print("At line ", line_num, ", ", string, ", SmileyFace", sep='')
 			print(self.actual_code_lines[line_num - 1])
 		else:
-			print("Run-time error :", line_num)
+			print("Run-time error : line", line_num)
 		raise RTException
 
 	def test_something(self, to_test, line_num, string):

@@ -106,7 +106,7 @@ class Command:
 				value = "N/A"
 			else:
 				if result.value[1]:
-					value = hex(result.value[2]*4)
+					value = hex(result.value[2])
 				else:
 					value = str(int(result.value[2])) if result.value[0] else str(float(result.value[2]))
 			print(value)
@@ -124,7 +124,7 @@ class Command:
 					value = "N/A"
 				else:
 					if result.value[1]:
-						value = hex(value*4)
+						value = hex(value)
 					else:
 						value = str(int(value)) if result.value[0] else str(float(value))
 				print(name, "=", value, "at line", line)

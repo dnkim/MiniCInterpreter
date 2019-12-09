@@ -10,7 +10,7 @@ class Frame:
 	def __init__(self):
 		self.function_table = FunctionTable()
 		self.symbol_tables = []
-		self.array_of_arrays = [(True, 0, []) for i in range(0)]
+		self.array_of_arrays = {}
 		self.top = BASE
 
 	# Handles frame to reflect scope for a new bracket
@@ -77,8 +77,8 @@ class Frame:
 	# Returns address to be allocated
 	def allocate_symbol(self, is_int, length):
 		rax = self.top
-		self.top += 1
-		self.array_of_arrays.append((is_int, length, [None for i in range(length)]))
+		self.top += SIZE
+		self.array_of_arrays[rax] = (is_int, length, [None for i in range(length)])
 		return rax
 
 	# Declares corresponding symbol

@@ -1,0 +1,12 @@
+int recc(int a)
+{
+	return recc(a + 1);
+}
+
+int main(void)
+{
+	int a;
+	a = 0;
+	printf("%d\n", recc(a));
+	return 0;
+}

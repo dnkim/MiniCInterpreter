@@ -9,6 +9,7 @@ from LexicalStep import sub_count, sub_isn_spch
 import sys
 
 MAIN = "main"
+MAX_DEPTH = 500
 
 class RTException(Exception): pass
 
@@ -31,11 +32,13 @@ class IAdd:
 
 class Interpreter:
 	def __init__(self, goal, test = False, actual_code_lines = [], no_command = True):
+		sys.setrecursionlimit(10000)
 		self.test = test
 		self.actual_code_lines = actual_code_lines
 		self.no_command = no_command
 		self.frame = Frame()
 		self.command = Command(self.frame, self.no_command, self.actual_code_lines)
+		self.depth = 0
 		self.proper_exit = False
 		self.exit_code = -1
 		self.match = {
@@ -107,7 +110,11 @@ class Interpreter:
 			self.test_something(not isinstance(arg, str), func.line_num, "String argument for non printf function call")
 			arg_values.append(self.whos_that_poke(arg))
 
+		self.depth += 1
+		if self.depth > MAX_DEPTH:
+			self.report_rt_err(func.line_num, "Maximum function call depth exceeded")
 		self.frame.into_function()
+
 		rax = IInt(0) if func.returns_int else IFlt(0)
 		for i in range(len(arguments)):
 			is_int, is_pointer, arg_name = func.arguments[i]
@@ -136,7 +143,9 @@ class Interpreter:
 
 		if not mainmain:
 			self.frame.escape_function()
+			self.depth -= 1
 			self.command.skip_lines(back_ttf)
+
 		return rax
 	
 	def execute_printf(self, arguments, line_num):

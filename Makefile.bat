@@ -16,3 +16,7 @@ if %1 ==clean (
 if %1 == test2 (
 for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do echo %%f
 )
+
+if %1 == test3 (
+for /f %%f in ('dir /b .\%TEST_DIR%\*.txt') do %CC% %TESTER% .\%TEST_DIR%\%%f %TEST_OPT% recc > .\%TEST_DIR%\results\%%f
+)

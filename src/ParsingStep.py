@@ -166,7 +166,7 @@ class Par:
 
     def match_expr(self):
         term = self.match_term()
-        has_one_factor = len(term.factors_and_ops) == 1
+        has_one_factor = len(term.factors_and_ops) < 3
         also_of_type_1 = has_one_factor and term.factors_and_ops[0].type == PitFactor1
         also_is_lhs = also_of_type_1 and term.factors_and_ops[0].op == 0
         also_equal_pending = also_is_lhs and self.top_token().type == TokEqual
@@ -191,6 +191,7 @@ class Par:
                 break
             self.next_token()
             expr1.terms_and_ops.append(self.match_term())
+        expr1.terms_and_ops.append(0)
         return expr1
 
 
@@ -207,6 +208,7 @@ class Par:
                 break
             self.next_token()
             term.factors_and_ops.append(self.match_factor())
+        term.factors_and_ops.append(0)
         return term
 
     def match_factor(self):

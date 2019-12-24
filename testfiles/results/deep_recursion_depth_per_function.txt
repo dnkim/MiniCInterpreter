@@ -1,2 +1,0 @@
-a = 55000
-... Program finished with exit code: 10

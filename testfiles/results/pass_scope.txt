@@ -1,9 +1,0 @@
-Hello World
-1
-720
-720.0
-1143.9267840000002
-1143
-hihi
-1.1
-... Program finished with exit code: 0

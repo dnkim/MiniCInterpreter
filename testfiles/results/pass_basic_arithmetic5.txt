@@ -1,2 +1,0 @@
-Hell0 World
-... Program finished with exit code: 0

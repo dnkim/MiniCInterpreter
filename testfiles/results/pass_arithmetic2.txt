@@ -1,0 +1,25 @@
+Hello World
+1
+720
+720.0
+1143.9267840000002
+1143
+hihi
+4.1
+-1307505.1141120002
+2
+3
+1
+7
+2
+4
+2
+hmm
+hmm
+hmm2
+hmm2
+hmm2
+hmm2
+-1
+5
+... Program finished with exit code: 0

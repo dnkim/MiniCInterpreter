@@ -1,0 +1,35 @@
+int id1(int num) {
+  if (num < 1) return num;
+  return 1 + id2(num-1);
+}
+
+int id2(int num){
+  if (num < 1) return num;
+  return 1 + id3(num-1);
+}
+
+int id3(int num){
+  if (num < 1) return num;
+  return 1 + id4(num-1);
+}
+
+int id4(int num){
+  if (num < 1) return num;
+  return 1 + id5(num-1);
+}
+
+int id5(int num){
+  if (num < 1) return num;
+  return 1 + id6(num-1);
+}
+
+int id6(int num){
+  if (num < 1) return num;
+  return 1 + id1(num-1);
+}
+
+int main(void) {
+ int a;
+a = 55000;
+printf("a = %d\n", id1(a));
+}

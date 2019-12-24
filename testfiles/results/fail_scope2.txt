@@ -1,0 +1,11 @@
+Hello World
+1
+720
+720.0
+1143.9267840000002
+1143
+hihi
+4.1
+-1307505.1141120002
+At line 49, No such symbol or something, SmileyFace
+    printf("%d\n", three);

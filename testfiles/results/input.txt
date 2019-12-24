@@ -1,0 +1,15 @@
+value : 0
+value : 1
+value : 2
+value : 3
+value : 4
+
+Start...
+Average : 0.0
+Average : 0.5
+Average : 1.0
+Average : 1.5
+Average : 2.0
+*** total exceeds 3!***
+Done!
+... Program finished with exit code: 6

@@ -1,0 +1,2 @@
+At line 3, Max function recursion depth 50000 reached for recc, SmileyFace
+	return recc(a + 1);

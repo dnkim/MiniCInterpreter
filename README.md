@@ -12,10 +12,10 @@ make clean
 ```
 ### CLI
 ```
->> next/n [<lines>]
->> print/p <name>
->> trace/t <name>
->> current/c
->> location/l
->> quit/q
+>> (next/n) [<lines>]
+>> (print/p) <name>
+>> (trace/t) <name>
+>> (current/c)
+>> (location/l)
+>> (quit/q)
 ```

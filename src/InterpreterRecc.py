@@ -150,6 +150,7 @@ class InterpreterRecc:
         rax = IInt(0xcccc)
         self.frame.into_function()
         self.beginners_luck(FakeParsedItem(main, [], 0, True))
+        self.command.skip_lines(main.line_num, True)
 
         while True:
             exe = self.stuffs[-1]

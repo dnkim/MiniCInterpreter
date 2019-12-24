@@ -3,11 +3,12 @@
 ### Setup
 ```
 make test
+make rtest
 make clean
 ```
 ### Run
 ```
-./mci <input>
+./mci [-t] [-r] <input>
 ```
 ### CLI
 ```
